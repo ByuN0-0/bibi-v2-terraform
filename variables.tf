@@ -57,3 +57,9 @@ variable "tags" {
   type        = list(string)
   default     = ["bibi-bot", "discord-bot"]
 }
+
+variable "gcp_credentials" {
+  description = "GCP credentials JSON file"
+  type        = string
+  sensitive = true
+}
