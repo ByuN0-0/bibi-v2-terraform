@@ -48,7 +48,14 @@ resource "google_service_account" "bibi_bot_sa" {
   description  = "Service account for Bibi Bot VM with GCR read-only access"
 }
 
-# Grant GCR pull permissions to service account
+# Grant Artifact Registry read permissions to service account
+resource "google_project_iam_member" "sa_artifact_registry_reader" {
+  project = var.gcp_project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${google_service_account.bibi_bot_sa.email}"
+}
+
+# Grant GCR pull permissions (for legacy GCR support)
 resource "google_project_iam_member" "sa_gcr_pull" {
   project = var.gcp_project_id
   role    = "roles/storage.objectViewer"
