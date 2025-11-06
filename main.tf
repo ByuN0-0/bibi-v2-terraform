@@ -41,24 +41,25 @@ resource "google_compute_instance" "bibi_bot_vm" {
   }
 }
 
+# Artifact Registry repository for Docker images
+resource "google_artifact_registry_repository" "bibi_bot_repo" {
+  location      = var.gcp_region
+  repository_id = "bibi-bot"
+  description   = "Docker repository for Bibi Bot"
+  format        = "DOCKER"
+}
+
 # Service Account for VM with minimal permissions
 resource "google_service_account" "bibi_bot_sa" {
   account_id   = "bibi-bot-vm-sa"
   display_name = "Bibi Bot VM Service Account"
-  description  = "Service account for Bibi Bot VM with GCR read-only access"
+  description  = "Service account for Bibi Bot VM with Artifact Registry read-only access"
 }
 
 # Grant Artifact Registry read permissions to service account
 resource "google_project_iam_member" "sa_artifact_registry_reader" {
   project = var.gcp_project_id
   role    = "roles/artifactregistry.reader"
-  member  = "serviceAccount:${google_service_account.bibi_bot_sa.email}"
-}
-
-# Grant GCR pull permissions (for legacy GCR support)
-resource "google_project_iam_member" "sa_gcr_pull" {
-  project = var.gcp_project_id
-  role    = "roles/storage.objectViewer"
   member  = "serviceAccount:${google_service_account.bibi_bot_sa.email}"
 }
 
