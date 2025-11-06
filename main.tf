@@ -28,6 +28,12 @@ resource "google_compute_instance" "bibi_bot_vm" {
   # Allow HTTP and custom ports for Discord bot
   tags = var.tags
 
+  # Service account for GCR access
+  service_account {
+    email  = google_service_account.bibi_bot_sa.email
+    scopes = ["cloud-platform"]
+  }
+
   labels = {
     environment = "production"
     app         = "discord-bot"
@@ -35,11 +41,18 @@ resource "google_compute_instance" "bibi_bot_vm" {
   }
 }
 
+# Service Account for VM with minimal permissions
+resource "google_service_account" "bibi_bot_sa" {
+  account_id   = "bibi-bot-vm-sa"
+  display_name = "Bibi Bot VM Service Account"
+  description  = "Service account for Bibi Bot VM with GCR read-only access"
+}
+
 # Grant GCR pull permissions to service account
 resource "google_project_iam_member" "sa_gcr_pull" {
   project = var.gcp_project_id
   role    = "roles/storage.objectViewer"
-  member  = "user:${var.service_account_email}"
+  member  = "serviceAccount:${google_service_account.bibi_bot_sa.email}"
 }
 
 # Firewall rule for SSH access
