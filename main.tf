@@ -35,11 +35,11 @@ resource "google_compute_instance" "bibi_bot_vm" {
   }
 }
 
-# Grant GCR pull permissions to default service account
-resource "google_project_iam_member" "default_sa_gcr_pull" {
+# Grant GCR pull permissions to service account
+resource "google_project_iam_member" "sa_gcr_pull" {
   project = var.gcp_project_id
   role    = "roles/storage.objectViewer"
-  member  = "serviceAccount:${var.gcp_project_id}-compute@developer.gserviceaccount.com"
+  member  = "user:${var.service_account_email}"
 }
 
 # Firewall rule for SSH access

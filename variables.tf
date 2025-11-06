@@ -63,3 +63,9 @@ variable "gcp_credentials" {
   type        = string
   sensitive = true
 }
+
+variable "service_account_email" {
+  description = "Email of the service account for GCR access"
+  type        = string
+  default     = "devbyeon@gmail.com"
+}
